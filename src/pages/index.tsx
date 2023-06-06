@@ -77,8 +77,7 @@ export const IndexPage = () => {
   }
 
   const initializeGame = () => {
-    cardDeck = CardDeck( numberDecks );
-    cardDeck = shuffleDeck( cardDeck );
+    cardDeck = shuffleDeck( CardDeck( numberDecks ) );
   }
 
   const handleNewGameClick = ( event: any ) => {
