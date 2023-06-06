@@ -1,0 +1,44 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    padding: 0.5rem;
+    width: 0.5in;
+    height: 1.0in;
+    border-radius: 0.625rem;
+    border: 0.0625rem solid rgb(0, 0, 0);
+    background: rgb( 255, 255, 255 );
+    z-index: 99;
+
+    &:nth-child(n+2) {
+        margin-left: -2.5rem;
+    }
+
+    &.red {
+        color: rgb( 255,  0,  0);
+    }
+
+    &.black {
+        color: rgb( 0, 0, 0);
+    }
+
+    .left-corner {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 1.0rem;
+    }
+
+    .right-corner {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        align-self: flex-end;
+        font-size: 1.0rem;
+    }  
+
+    .inverted {
+        transform: rotate(180deg);
+    } 
+}
