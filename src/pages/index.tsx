@@ -40,7 +40,7 @@ export const IndexPage = () => {
     const deckLength: number = deck && deck.length;
     console.log(deckLength);
     let shuffledDeck: any = [];
-    let shuffledArray: number[] = [];
+    let shuffledArray: number[];
 
     shuffledArray = generateRandomNumberArray( deckLength, deckLength - 1, shuffledArray );
 
