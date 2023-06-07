@@ -20,12 +20,7 @@ const Playerarea = ({ player, hand }: PlayerAreaProps) => {
     }
 
     const handTotal = ( hand: any ): number => {
-        console.log(hand);
         let total: number = 0;
-        // for(let i = 0; i < hand.length; i++) {
-        //     let card: any = hand[i].rank;
-        //     total += ranks[card];
-        // }
 
         return total;
     }

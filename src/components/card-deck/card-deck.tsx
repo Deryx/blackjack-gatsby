@@ -12,7 +12,7 @@ const CardDeck = ( numDecks: number ): any[] => {
     for(let i = 0; i < numDecks; i++) {
         for(const cardSuit of cardSuits) {
             for(const cardRank of cardRanks) {
-                deck = [...deck, <Card suit={ cardSuit } rank={ cardRank } />];
+                deck = [...deck, <Card key={ `${cardSuit}-${cardRank}-${i}`} suit={ cardSuit } rank={ cardRank } />];
             }
         }
     }

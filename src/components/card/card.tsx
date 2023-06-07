@@ -5,7 +5,7 @@ import './styles.scss';
 
 const Card = ( { rank, suit }: CardProps ) => {
     let cardClass: any = [ 'card' ];
-    cardClass.push( ( suit === suits[ 'diamonds' ] || suit === suits[ 'hearts' ] ) ? 'red' : 'black' );
+    cardClass.push( ( suit === suits[ 'diamond' ] || suit === suits[ 'heart' ] ) ? 'red' : 'black' );
     cardClass = cardClass.join( ' ' );
 
     return (

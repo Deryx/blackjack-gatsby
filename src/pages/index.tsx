@@ -10,7 +10,10 @@ export const IndexPage = () => {
   const numberPlayers: number = 5;
   const initialCards: number = 2;
 
-  let [hands, setHands] = useState({});
+  let [hands, setHands] = useState({
+    dealerHand: [],
+    playerHands: []
+  });
   let playerAreas: any[] = [];
   let arrayIndex: number = 0;
   let cardDeck: any;
@@ -40,7 +43,7 @@ export const IndexPage = () => {
     const deckLength: number = deck && deck.length;
     console.log(deckLength);
     let shuffledDeck: any = [];
-    let shuffledArray: number[];
+    let shuffledArray: number[] = [];
 
     shuffledArray = generateRandomNumberArray( deckLength, deckLength - 1, shuffledArray );
 
@@ -77,11 +80,13 @@ export const IndexPage = () => {
   }
 
   const initializeGame = () => {
-    cardDeck = shuffleDeck( CardDeck( numberDecks ) );
+    cardDeck = CardDeck( numberDecks );
+    cardDeck = shuffleDeck( cardDeck );
   }
 
   const handleNewGameClick = ( event: any ) => {
     dealCards( cardDeck );
+    console.log(hands);
   }
 
   initializeGame();
@@ -89,13 +94,13 @@ export const IndexPage = () => {
   return (
     <div className="table">
       <div className="dealerArea">
-        <Dealerhand hand={ hands.dealerHand } />
+        <Dealerhand key='dealer' hand={ hands.dealerHand } />
       </div>
       <div className='newGameButton'>
         <button onClick={ handleNewGameClick }>new game</button>
       </div>
       <div className="playerArea">
-        { hands.playerHands && hands.playerHands.map( (hand, index) => <Playerarea player={ index } hand={ hand } />) }
+        { hands.playerHands && hands.playerHands.map( (hand, index) => <Playerarea key={ `player-${ index }`} player={ index } hand={ hand } />) }
       </div>
     </div>
   )
