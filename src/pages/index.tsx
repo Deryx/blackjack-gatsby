@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import CardDeck from "../components/card-deck/card-deck";
 import Dealerhand from "../components/dealer-hand/dealer-hand";
 import Playerarea from "../components/player-area/player-area";
+import ranks from '../components/card/ranks';
 import './styles.scss';
 
 
 export const IndexPage = () => {
   const numberDecks: number = 8;
   const numberPlayers: number = 5;
+  const dealerMinScore: number = 17;
+  const bestScore: number = 21;
   const initialCards: number = 2;
   const [cardDeck, setCardDeck] = useState([]);
 
@@ -81,11 +84,11 @@ export const IndexPage = () => {
     setHands( hands );
   }
 
-  const initializeGame = () => {
+  const initializeGame = (): void => {
     setCardDeck( shuffleDeck( CardDeck( numberDecks ) ) );
   }
 
-  const handleNewGameClick = () => {
+  const resetPlayerButtons = (): void => {
     const hitButtons: any = Array.from(document.querySelectorAll('button[id^=hit]'));
     const stayButtons: any = Array.from(document.querySelectorAll('button[id^=stay]'));
     const aceButtons: any = Array.from(document.querySelectorAll('button[id^=ace]'));
@@ -101,11 +104,24 @@ export const IndexPage = () => {
     for(const button of aceButtons) {
       button.disabled = false;
     }
+  }
 
+  const resetHandStatuses = (): void => {
+    const handStatuses: any = Array.from(document.querySelectorAll('.playerArea .area div[id^=hand]'));
+    const numHands: number = handStatuses.length;
+
+    for(let i = 0; i < numHands; i++) {
+        handStatuses[i].innerHTML = '';
+    }
+  }
+
+  const handleNewGameClick = () => {
+    resetPlayerButtons();
+    resetHandStatuses();
     dealCards();
   }
 
-  const handleHitButtonClick = ( event: any ) => {
+  const handleHitButtonClick = ( event: any ): void => {
     const hitButtonId: string = event.target.id;
     const player: number = parseInt(hitButtonId[hitButtonId.length - 1]);
     const dealerhand: any = hands.dealerHand;
@@ -119,7 +135,57 @@ export const IndexPage = () => {
     });
   }
 
-  const handleStayButtonClick = ( event: any ) => {
+  const hitDealer = (): any => {
+    const playerCards: any = hands.playerHands;
+    const dealerCards: any = hands.dealerHand;
+    let score: number;
+
+    const handTotal = ( hand: any ): number => {
+      let total: number = 0;
+
+      for(const card of hand) {
+          total += ranks[card.props.rank]
+          if(card.props.rank === 'A') {
+              total += 10;
+          }
+      }
+
+      return total;
+    }
+
+    score = handTotal(dealerCards);
+
+    if(score < dealerMinScore) {
+      dealerCards.push(cardDeck.shift());
+
+      setHands({
+        dealerHand: dealerCards,
+        playerHands: playerCards
+      });
+
+      return hitDealer();
+    }
+  }
+
+  const updateHandStatus = (): void => {
+    const handStatuses: any = Array.from(document.querySelectorAll('.playerArea .area div[id^=hand]'));
+    const playerScores: any = Array.from(document.querySelectorAll('.playerArea div[id^=player-hand] div[id^=score]'));
+    const dealerScoreArea: any = document.querySelector('.dealerArea .score');
+    const dealerScore: number = parseInt(dealerScoreArea.lastChild.nodeValue);
+    const numHands: number = handStatuses.length;
+    for(let i = 0; i < numHands; i++) {
+      const playerScore: number = parseInt(playerScores[i].lastChild.nodeValue);
+      if((playerScore > dealerScore && playerScore <= bestScore) || dealerScore > bestScore) {
+        handStatuses[i].innerHTML = 'YOU WON!';
+      } else if((playerScore < dealerScore && playerScore <= bestScore) || playerScore > bestScore) {
+        handStatuses[i].innerHTML = 'YOU LOST!';
+      } else {
+        handStatuses[i].innerHTML = 'YOU TIED!';
+      }
+    }
+  }
+
+  const handleStayButtonClick = ( event: any ): void => {
     const stayButtonId: string = event.target.id;
     const hitButtons: any = document.querySelectorAll('button[id^=hit]');
     const dealerScore: any = document.querySelector('.dealerArea .score');
@@ -138,10 +204,12 @@ export const IndexPage = () => {
     if(Array.from(hitButtons).every(buttonDisabled)) {
       dealerScore.style.visibility = 'visible';
       dealerFirstCard.style.visibility = 'visible';
+      hitDealer();
+      setTimeout(updateHandStatus, 1000);
     }
   }
 
-  const handleAceButtonClick = ( event: any ) => {
+  const handleAceButtonClick = ( event: any ): void => {
     const aceButtonId: string = event.target.id;
     const player: number = parseInt(aceButtonId[aceButtonId.length - 1]);
     const aceButton: any = document.querySelector(`#ace-button-${player}`);
