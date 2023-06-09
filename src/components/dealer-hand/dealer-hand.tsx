@@ -9,6 +9,9 @@ const Dealerhand = ({ hand }: DealerHandProps) => {
 
         for(const card of hand) {
             total += ranks[card.props.rank]
+            if(card.props.rank === 'A') {
+                total += 10;
+            }
         }
 
         return total;

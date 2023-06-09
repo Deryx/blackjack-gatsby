@@ -86,6 +86,22 @@ export const IndexPage = () => {
   }
 
   const handleNewGameClick = () => {
+    const hitButtons: any = Array.from(document.querySelectorAll('button[id^=hit]'));
+    const stayButtons: any = Array.from(document.querySelectorAll('button[id^=stay]'));
+    const aceButtons: any = Array.from(document.querySelectorAll('button[id^=ace]'));
+
+    for(const button of hitButtons) {
+      button.disabled = false;
+    }
+
+    for(const button of stayButtons) {
+      button.disabled = false;
+    }
+
+    for(const button of aceButtons) {
+      button.disabled = false;
+    }
+
     dealCards();
   }
 
