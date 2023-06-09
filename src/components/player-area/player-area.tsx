@@ -6,21 +6,13 @@ import Playerscore from "../../components/player-score/player-score";
 import ranks from '../card/ranks';
 import './styles.scss';
 
-const Playerarea = ({ player, hand }: PlayerAreaProps) => {
-    const handleHitClick = ( event: any ) => {
-
-    }
-
-    const handleStayClick = ( event: any ) => {
-
-    }
-
-    const handleAceClick = ( event: any ) => {
-
-    }
-
+const Playerarea = ({ player, hand, handleHitClick, handleStayClick, handleAceClick }: PlayerAreaProps) => {
     const handTotal = ( hand: any ): number => {
         let total: number = 0;
+
+        for(const card of hand) {
+            total += ranks[card.props.rank]
+        }
 
         return total;
     }
