@@ -105,9 +105,24 @@ export const IndexPage = () => {
 
   const handleStayButtonClick = ( event: any ) => {
     const stayButtonId: string = event.target.id;
+    const hitButtons: any = document.querySelectorAll('button[id^=hit]');
+    const dealerScore: any = document.querySelector('.dealerArea .score');
+    const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
     const player: number = parseInt(stayButtonId[stayButtonId.length - 1]);
     const hitButton: any = document.querySelector(`#hit-button-${player}`);
+    const aceButton: any = document.querySelector(`#ace-button-${player}`);
+    const stayButton: any = document.querySelector(`#stay-button-${player}`);
+
+    const buttonDisabled = ( button: any ) => button.disabled === true;
+
     hitButton.disabled = true;
+    aceButton.disabled = true;
+    stayButton.disabled = true;
+
+    if(Array.from(hitButtons).every(buttonDisabled)) {
+      dealerScore.style.visibility = 'visible';
+      dealerFirstCard.style.visibility = 'visible';
+    }
   }
 
   const handleAceButtonClick = ( event: any ) => {

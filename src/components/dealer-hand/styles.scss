@@ -1,11 +1,13 @@
-.cards {
-    display: flex;
-    justify-content: center;
-    width: 100vw;
+.dealerArea {
+    .cards {
+        display: flex;
+        justify-content: center;
+        width: 100vw;
 
-    .card:first-child {
-        .left-corner {
-            visibility: hidden;
+        .card:first-child {
+            .left-corner {
+                visibility: hidden;
+            }
         }
     }
 }
