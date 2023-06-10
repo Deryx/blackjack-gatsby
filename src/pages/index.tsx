@@ -177,7 +177,7 @@ export const IndexPage = () => {
 
     score = dealerHandTotal(dealerCards);
 
-    if(score < dealerMinScore) {
+    if(score <= dealerMinScore) {
       dealerCards.push(cardDeck.shift());
 
       setHands({

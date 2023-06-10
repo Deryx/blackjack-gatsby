@@ -1,48 +1,57 @@
-.table {
+body {
     margin: 0;
     padding: 0;
     width: 100vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    height: 95vh;
 
-    .dealerArea {
+    .table {
         margin: 0;
         padding: 0;
-        width: 100%;
-        height: 40vh;
+        width: 100vw;
+        height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        background-color: rgb(50 121 50);
 
-        .score {
+        .dealerArea {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            .score {
+                display: flex;
+                justify-content: center;
+                margin-top: 1.25rem;
+                width: 100%;
+                visibility: hidden;
+            }        
+        }
+
+        .newGameButton {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 10vh;
             display: flex;
             justify-content: center;
-            margin-top: 1.25rem;
-            width: 100%;
-            visibility: hidden;
-        }        
-    }
+            align-items: center;
+        }
 
-    .newGameButton {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 10vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .playerArea {
-        margin: 0;
-        padding: 0;
-        width: 90%;
-        height: 40vh;
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
+        .playerArea {
+            margin: 0;
+            padding: 0;
+            width: 90%;
+            height: 40vh;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
     }
 }

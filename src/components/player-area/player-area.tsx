@@ -21,7 +21,7 @@ const Playerarea = ({ player, hand, handleHitClick, handleStayClick, handleAceCl
         <div className='area'>
             <div id={ `player-buttons-${ player }`} className='buttons'>
                 <Playerbutton type='hit' value='hit' player={ player } handleClick={ handleHitClick } />
-                <Playerbutton type='stay' value='stay' player={ player } handleClick={ handleStayClick } />
+                <Playerbutton type='stay' value='stand' player={ player } handleClick={ handleStayClick } />
                 <Playerbutton type='ace' value='ace = 11' player={ player } handleClick={ handleAceClick } />
             </div>
             <div id={ `handStatus-${ player }` } className='handStatus'></div>
