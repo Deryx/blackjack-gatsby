@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import CardDeck from "../components/card-deck/card-deck";
 import Dealerhand from "../components/dealer-hand/dealer-hand";
 import Playerarea from "../components/player-area/player-area";
-import ranks from '../components/card/ranks';
+import dealerHandTotal from "../helper/dealerHandTotal";
+import playerHandTotal from "../helper/playerHandTotal";
 import './styles.scss';
+import Playerscore from "../components/player-score/player-score";
 
 
 export const IndexPage = () => {
@@ -124,15 +126,48 @@ export const IndexPage = () => {
   const handleHitButtonClick = ( event: any ): void => {
     const hitButtonId: string = event.target.id;
     const player: number = parseInt(hitButtonId[hitButtonId.length - 1]);
+    const hitButtons: any = document.querySelectorAll('button[id^=hit]');
+    const hitButton: any = document.querySelector(`#hit-button-${player}`);
+    const stayButton: any = document.querySelector(`#stay-button-${player}`);
+    const aceButton: any = document.querySelector(`#ace-button-${player}`);
     const dealerhand: any = hands.dealerHand;
+    const dealerScore: any = document.querySelector('.dealerArea .score');
+    const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
+    const playerScoreArea: any = document.querySelector(`#score-player-${player}`)?.lastChild;
+    const playerAreaScore: number = parseInt(playerScoreArea.nodeValue);
+
+    let score: number;
+
+    const buttonDisabled = ( button: any ) => button.disabled === true;
+
     let playerCards: any = hands.playerHands;
     let playerHand: any = hands.playerHands[player];
-    playerHand = [...playerHand, cardDeck.shift()];
+    const newCard: any = cardDeck.shift();
+    const newCardScore: number = playerHandTotal([newCard]);
+
+    playerHand = [...playerHand, newCard];
     playerCards[player] = playerHand;
+
+    score = playerAreaScore + newCardScore;
+    playerScoreArea.nodeValue = score.toString();
+
     setHands({
       dealerHand: dealerhand,
       playerHands: playerCards
     });
+    
+    if(score > bestScore) {
+      hitButton.disabled = true;
+      stayButton.disabled = true;
+      aceButton.disabled = true;
+
+      if(Array.from(hitButtons).every(buttonDisabled)) {
+        dealerScore.style.visibility = 'visible';
+        dealerFirstCard.style.visibility = 'visible';
+        hitDealer();
+        setTimeout(updateHandStatus, 1000);
+      }
+    }
   }
 
   const hitDealer = (): any => {
@@ -140,20 +175,7 @@ export const IndexPage = () => {
     const dealerCards: any = hands.dealerHand;
     let score: number;
 
-    const handTotal = ( hand: any ): number => {
-      let total: number = 0;
-
-      for(const card of hand) {
-          total += ranks[card.props.rank]
-          if(card.props.rank === 'A') {
-              total += 10;
-          }
-      }
-
-      return total;
-    }
-
-    score = handTotal(dealerCards);
+    score = dealerHandTotal(dealerCards);
 
     if(score < dealerMinScore) {
       dealerCards.push(cardDeck.shift());
@@ -169,13 +191,20 @@ export const IndexPage = () => {
 
   const updateHandStatus = (): void => {
     const handStatuses: any = Array.from(document.querySelectorAll('.playerArea .area div[id^=hand]'));
-    const playerScores: any = Array.from(document.querySelectorAll('.playerArea div[id^=player-hand] div[id^=score]'));
     const dealerScoreArea: any = document.querySelector('.dealerArea .score');
     const dealerScore: number = parseInt(dealerScoreArea.lastChild.nodeValue);
     const numHands: number = handStatuses.length;
+
     for(let i = 0; i < numHands; i++) {
-      const playerScore: number = parseInt(playerScores[i].lastChild.nodeValue);
-      if((playerScore > dealerScore && playerScore <= bestScore) || dealerScore > bestScore) {
+      let playerScore: number = playerHandTotal(hands.playerHands[i]);
+      const playerScoreArea: any = document.querySelector(`#score-player-${i}`)?.lastChild;
+      const playerAreaScore: number = parseInt(playerScoreArea.nodeValue);
+
+      if(playerAreaScore !== playerScore) {
+        playerScore = playerAreaScore;
+      }
+
+      if((playerScore > dealerScore && playerScore <= bestScore) || (dealerScore > bestScore && playerScore < bestScore)) {
         handStatuses[i].innerHTML = 'YOU WON!';
       } else if((playerScore < dealerScore && playerScore <= bestScore) || playerScore > bestScore) {
         handStatuses[i].innerHTML = 'YOU LOST!';
@@ -215,7 +244,7 @@ export const IndexPage = () => {
     const aceButton: any = document.querySelector(`#ace-button-${player}`);
     const playerHand: any = hands.playerHands[player];
     const playerScore: any = document.querySelector(`#score-player-${player}`)?.lastChild;
-    let score: number = parseInt(playerScore.nodeValue);
+    let score: number = playerHandTotal(playerHand);
     let hasAce: boolean = false;
 
     for(const card of playerHand) {
@@ -225,7 +254,8 @@ export const IndexPage = () => {
     }
 
     if(!!hasAce) {
-      playerScore.nodeValue = (score + 10).toString();
+      score += 10;
+      playerScore.nodeValue = score.toString();
       aceButton.disabled = true;
     }
   }
