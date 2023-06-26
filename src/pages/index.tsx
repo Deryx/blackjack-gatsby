@@ -17,8 +17,11 @@ export const IndexPage = () => {
   const [cardDeck, setCardDeck] = useState([]);
 
   let [hands, setHands] = useState({
-    dealerHand: [],
-    playerHands: []
+    dealer: {
+      hand: [],
+      score: 0
+    },
+    players: []
   });
   let arrayIndex: number = 0;
 
@@ -63,24 +66,37 @@ export const IndexPage = () => {
   }
 
   const dealCards = (): void => {
-    let dealerhand: any[] = [];
-    let playerhands: any = [];
+    let dealerHand: any = [];
+    let dealr: any = {};
+    let playerHands: any = [];
+    let plyrs: any = [];
 
     for(let i = 0; i < numberPlayers; i++) {
-      playerhands = [...playerhands, []];
+      playerHands = [...playerHands, []];
     }
 
     for(let i = 0; i < initialCards; i++) {
       for(let j = 0; j < numberPlayers; j++) {
-        playerhands[j] = [...playerhands[j], cardDeck.shift()];
+        let newCard = cardDeck.shift();
+        playerHands[j] = [...playerHands[j], newCard];
       }
 
-      dealerhand = [...dealerhand, cardDeck.shift()];
+      dealerHand = [...dealerHand, cardDeck.shift()];
+    }
+
+    dealr.hand = dealerHand;
+    dealr.score = dealerHandTotal(dealerHand);
+
+    for(const hand of playerHands) {
+      const player: any = {};
+      player.hand = hand;
+      player.score = playerHandTotal(hand);
+      plyrs = [...plyrs, player];
     }
 
     hands = {
-      dealerHand: dealerhand,
-      playerHands: playerhands
+      dealer: dealr,
+      players: plyrs
     }
 
     setHands( hands );
@@ -126,37 +142,39 @@ export const IndexPage = () => {
   const handleHitButtonClick = ( event: any ): void => {
     const hitButtonId: string = event.target.id;
     const player: number = parseInt(hitButtonId[hitButtonId.length - 1]);
+    const currentDealer: any = hands.dealer;
+    const currentPlayer: any = hands.players[player];
     const hitButtons: any = document.querySelectorAll('button[id^=hit]');
     const hitButton: any = document.querySelector(`#hit-button-${player}`);
     const stayButton: any = document.querySelector(`#stay-button-${player}`);
     const aceButton: any = document.querySelector(`#ace-button-${player}`);
-    const dealerhand: any = hands.dealerHand;
+
     const dealerScore: any = document.querySelector('.dealerArea .score');
     const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
-    const playerScoreArea: any = document.querySelector(`#score-player-${player}`)?.lastChild;
-    const playerAreaScore: number = parseInt(playerScoreArea.nodeValue);
-
-    let score: number;
+    const uiScoreArea: any = document.querySelector(`#score-player-${player}`)?.lastChild;  
+    let uiScore: number;
+    let updatedPlayers: any = hands.players;
 
     const buttonDisabled = ( button: any ) => button.disabled === true;
 
-    let playerCards: any = hands.playerHands;
-    let playerHand: any = hands.playerHands[player];
     const newCard: any = cardDeck.shift();
-    const newCardScore: number = playerHandTotal([newCard]);
-
-    playerHand = [...playerHand, newCard];
-    playerCards[player] = playerHand;
-
-    score = playerAreaScore + newCardScore;
-    playerScoreArea.nodeValue = score.toString();
+    uiScore = parseInt(uiScoreArea.nodeValue) + playerHandTotal([newCard])
+    currentPlayer.hand = [...currentPlayer.hand, newCard];
+    currentPlayer.score = playerHandTotal(currentPlayer.hand);
 
     setHands({
-      dealerHand: dealerhand,
-      playerHands: playerCards
+      dealer: currentDealer,
+      players: updatedPlayers
     });
+
+    if(uiScore !== currentPlayer.score) {
+      currentPlayer.score = uiScore;
+      uiScoreArea.nodeValue = uiScore.toString();
+    } 
+
+    updatedPlayers[player] = currentPlayer;
     
-    if(score > bestScore) {
+    if(currentPlayer.score > bestScore) {
       hitButton.disabled = true;
       stayButton.disabled = true;
       aceButton.disabled = true;
@@ -171,18 +189,19 @@ export const IndexPage = () => {
   }
 
   const hitDealer = (): any => {
-    const playerCards: any = hands.playerHands;
-    const dealerCards: any = hands.dealerHand;
+    const currentPlayers: any = hands.players;
+    const currentDealer: any = hands.dealer;
     let score: number;
 
-    score = dealerHandTotal(dealerCards);
+    score = dealerHandTotal(currentDealer.hand);
 
     if(score <= dealerMinScore) {
-      dealerCards.push(cardDeck.shift());
+      currentDealer.hand.push(cardDeck.shift());
+      currentDealer.score = dealerHandTotal(currentDealer.hand);
 
       setHands({
-        dealerHand: dealerCards,
-        playerHands: playerCards
+        dealer: currentDealer,
+        players: currentPlayers
       });
 
       return hitDealer();
@@ -191,24 +210,21 @@ export const IndexPage = () => {
 
   const updateHandStatus = (): void => {
     const handStatuses: any = Array.from(document.querySelectorAll('.playerArea .area div[id^=hand]'));
-    const dealerScoreArea: any = document.querySelector('.dealerArea .score');
-    const dealerScore: number = parseInt(dealerScoreArea.lastChild.nodeValue);
+    const dealerScore: number = hands.dealer.score;
     const numHands: number = handStatuses.length;
 
     for(let i = 0; i < numHands; i++) {
-      let playerScore: number = playerHandTotal(hands.playerHands[i]);
-      const playerScoreArea: any = document.querySelector(`#score-player-${i}`)?.lastChild;
-      const playerAreaScore: number = parseInt(playerScoreArea.nodeValue);
+      let currentPlayer: any = hands.players[i];
+      let playerScore: number = currentPlayer.score;
+      let uiScoreArea: any = document.querySelector(`#score-player-${i}`)?.lastChild; 
+      let uiScore: number = uiScoreArea && parseInt(uiScoreArea.nodeValue);
+      playerScore = (uiScore > playerScore) ? uiScore : playerScore;
 
-      if(playerAreaScore !== playerScore) {
-        playerScore = playerAreaScore;
-      }
-
-      if((playerScore > dealerScore && playerScore <= bestScore) || (dealerScore > bestScore && playerScore < bestScore)) {
+      if((playerScore > dealerScore && playerScore <= bestScore) || (dealerScore > bestScore && playerScore <= bestScore)) {
         handStatuses[i].innerHTML = 'YOU WON!';
-      } else if((playerScore < dealerScore && playerScore <= bestScore) || playerScore > bestScore) {
+      } else if((playerScore < dealerScore && playerScore < bestScore) || playerScore > bestScore) {
         handStatuses[i].innerHTML = 'YOU LOST!';
-      } else {
+      } else if(playerScore === dealerScore) {
         handStatuses[i].innerHTML = 'YOU TIED!';
       }
     }
@@ -240,36 +256,45 @@ export const IndexPage = () => {
 
   const handleAceButtonClick = ( event: any ): void => {
     const aceButtonId: string = event.target.id;
-    const player: number = parseInt(aceButtonId[aceButtonId.length - 1]);
-    const aceButton: any = document.querySelector(`#ace-button-${player}`);
-    const playerHand: any = hands.playerHands[player];
-    const playerScore: any = document.querySelector(`#score-player-${player}`)?.lastChild;
-    let score: number = playerHandTotal(playerHand);
+    const playerNumber: number = parseInt(aceButtonId[aceButtonId.length - 1]);
+    const currentDealer: any = hands.dealer;
+    const updatedPlayers: any = hands.players;
+    const aceButton: any = document.querySelector(`#ace-button-${playerNumber}`);
+    const playerScore: any = document.querySelector(`#score-player-${playerNumber}`)?.lastChild;  
+    const player: any = hands.players[playerNumber];
+
     let hasAce: boolean = false;
 
-    for(const card of playerHand) {
+    for(const card of player.hand) {
       if(card.props.rank.includes('A')) {
         hasAce = true;
       }
     }
 
     if(!!hasAce) {
-      score += 10;
-      playerScore.nodeValue = score.toString();
+      player.score += 10;
       aceButton.disabled = true;
+      playerScore.nodeValue = player.score.toString();
     }
-  }
+
+    updatedPlayers[playerNumber] = player;
+
+    setHands({
+      dealer: currentDealer,
+      players: updatedPlayers
+    });
+}
 
   return (
     <div className="table">
       <div className="dealerArea">
-        <Dealerhand key='dealer' hand={ hands.dealerHand } />
+        <Dealerhand key='dealer' hand={ hands.dealer.hand } />
       </div>
       <div className='newGameButton'>
         <button onClick={ handleNewGameClick }>new game</button>
       </div>
       <div className="playerArea">
-        { hands.playerHands && hands.playerHands.map( (hand, index) => <Playerarea key={ `player-${ index }`} player={ index } hand={ hand } handleHitClick={ handleHitButtonClick } handleStayClick={ handleStayButtonClick } handleAceClick={ handleAceButtonClick } />) }
+        { hands.players && hands.players.map( (player, index) => <Playerarea key={ `player-${ index }`} player={ index.toString() } hand={ player.hand } handleHitClick={ handleHitButtonClick } handleStayClick={ handleStayButtonClick } handleAceClick={ handleAceButtonClick } />) }
       </div>
     </div>
   )

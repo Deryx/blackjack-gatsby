@@ -1,27 +1,15 @@
 import React from 'react';
 import DealerHandProps from './props';
+import dealerHandTotal from '../../helper/dealerHandTotal';
 import ranks from '../card/ranks';
 import './styles.scss';
 
 const Dealerhand = ({ hand }: DealerHandProps) => {
-    const handTotal = ( hand: any ): number => {
-        let total: number = 0;
-
-        for(const card of hand) {
-            total += ranks[card.props.rank]
-            if(card.props.rank === 'A') {
-                total += 10;
-            }
-        }
-
-        return total;
-    }
-
     return (
         <>
             <div id='dealer-score' className='score'>
                 <label>score: </label>
-                { handTotal(hand) }
+                { dealerHandTotal(hand) }
             </div>
             <div className='cards'>
                 { hand }
