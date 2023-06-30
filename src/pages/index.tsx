@@ -5,8 +5,6 @@ import Playerarea from "../components/player-area/player-area";
 import dealerHandTotal from "../helper/dealerHandTotal";
 import playerHandTotal from "../helper/playerHandTotal";
 import './styles.scss';
-import Playerscore from "../components/player-score/player-score";
-
 
 export const IndexPage = () => {
   const numberDecks: number = 8;
@@ -230,15 +228,10 @@ export const IndexPage = () => {
 
   const handleStayButtonClick = ( event: any ): void => {
     const stayButtonId: string = event.target.id;
-    const hitButtons: any = document.querySelectorAll('button[id^=hit]');
-    const dealerScore: any = document.querySelector('.dealerArea .score');
-    const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
     const player: number = parseInt(stayButtonId[stayButtonId.length - 1]);
     const hitButton: any = document.querySelector(`#hit-button-${player}`);
     const aceButton: any = document.querySelector(`#ace-button-${player}`);
     const stayButton: any = document.querySelector(`#stay-button-${player}`);
-
-    const buttonDisabled = ( button: any ) => button.disabled === true;
 
     hitButton.disabled = true;
     aceButton.disabled = true;
