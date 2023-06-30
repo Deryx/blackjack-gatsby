@@ -139,25 +139,35 @@ export const IndexPage = () => {
     dealCards();
   }
 
+  const buttonDisabled = ( button: HTMLButtonElement ): boolean => button.disabled === true;
+
+  const updateDealerArea = (): void => {
+    const dealerScore: any = document.querySelector('.dealerArea .score');
+    const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
+    const hitButtons: any = document.querySelectorAll('button[id^=hit]');
+
+    if(Array.from(hitButtons).every(buttonDisabled)) {
+      dealerScore.style.visibility = 'visible';
+      dealerFirstCard.style.visibility = 'visible';
+      hitDealer();
+      setTimeout(updateHandStatus, 1000);
+    }
+  }
+
   const handleHitButtonClick = ( event: any ): void => {
     const hitButtonId: string = event.target.id;
     const player: number = parseInt(hitButtonId[hitButtonId.length - 1]);
     const currentDealer: any = hands.dealer;
     const currentPlayer: any = hands.players[player];
-    const hitButtons: any = document.querySelectorAll('button[id^=hit]');
     const hitButton: any = document.querySelector(`#hit-button-${player}`);
     const stayButton: any = document.querySelector(`#stay-button-${player}`);
     const aceButton: any = document.querySelector(`#ace-button-${player}`);
-
-    const dealerScore: any = document.querySelector('.dealerArea .score');
-    const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
     let updatedPlayers: any = hands.players;
 
-    const buttonDisabled = ( button: any ) => button.disabled === true;
 
     const newCard: any = cardDeck.shift();
     currentPlayer.hand = [...currentPlayer.hand, newCard];
-    currentPlayer.score = (buttonDisabled(aceButton)) ? currentPlayer.score += 10 : currentPlayer.score + playerHandTotal([newCard]);
+    currentPlayer.score = currentPlayer.score + playerHandTotal([newCard]);
     updatedPlayers[player] = currentPlayer;
 
     hands = {
@@ -172,12 +182,7 @@ export const IndexPage = () => {
       stayButton.disabled = true;
       aceButton.disabled = true;
 
-      if(Array.from(hitButtons).every(buttonDisabled)) {
-        dealerScore.style.visibility = 'visible';
-        dealerFirstCard.style.visibility = 'visible';
-        hitDealer();
-        setTimeout(updateHandStatus, 1000);
-      }
+      updateDealerArea()
     }
   }
 
@@ -239,12 +244,7 @@ export const IndexPage = () => {
     aceButton.disabled = true;
     stayButton.disabled = true;
 
-    if(Array.from(hitButtons).every(buttonDisabled)) {
-      dealerScore.style.visibility = 'visible';
-      dealerFirstCard.style.visibility = 'visible';
-      hitDealer();
-      setTimeout(updateHandStatus, 1000);
-    }
+    updateDealerArea();
   }
 
   const handleAceButtonClick = ( event: any ): void => {
