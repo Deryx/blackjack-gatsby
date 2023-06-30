@@ -7,7 +7,7 @@ import playerHandTotal from '../../helper/playerHandTotal';
 import ranks from '../card/ranks';
 import './styles.scss';
 
-const Playerarea = ({ player, hand, handleHitClick, handleStayClick, handleAceClick }: PlayerAreaProps) => {
+const Playerarea = ({ player, hand, score, handleHitClick, handleStayClick, handleAceClick }: PlayerAreaProps) => {
 
     return (
         <div className='area'>
@@ -18,7 +18,7 @@ const Playerarea = ({ player, hand, handleHitClick, handleStayClick, handleAceCl
             </div>
             <div id={ `handStatus-${ player }` } className='handStatus'></div>
             <div id={ `player-hand-${ player }` } className='handArea'>
-                <Playerscore player={ player } score={ playerHandTotal( hand ) } />
+                <Playerscore player={ player } score={ score } />
                 <Playerhand player={ player } hand={ hand }  />
             </div>
         </div>

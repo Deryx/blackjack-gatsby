@@ -151,29 +151,22 @@ export const IndexPage = () => {
 
     const dealerScore: any = document.querySelector('.dealerArea .score');
     const dealerFirstCard: any = document.querySelector('.dealerArea .card:first-child .left-corner');
-    const uiScoreArea: any = document.querySelector(`#score-player-${player}`)?.lastChild;  
-    let uiScore: number;
     let updatedPlayers: any = hands.players;
 
     const buttonDisabled = ( button: any ) => button.disabled === true;
 
     const newCard: any = cardDeck.shift();
-    uiScore = parseInt(uiScoreArea.nodeValue) + playerHandTotal([newCard])
     currentPlayer.hand = [...currentPlayer.hand, newCard];
-    currentPlayer.score = playerHandTotal(currentPlayer.hand);
+    currentPlayer.score = (buttonDisabled(aceButton)) ? currentPlayer.score += 10 : currentPlayer.score + playerHandTotal([newCard]);
+    updatedPlayers[player] = currentPlayer;
 
-    setHands({
+    hands = {
       dealer: currentDealer,
       players: updatedPlayers
-    });
+    }
 
-    if(uiScore !== currentPlayer.score) {
-      currentPlayer.score = uiScore;
-      uiScoreArea.nodeValue = uiScore.toString();
-    } 
+    setHands(hands);
 
-    updatedPlayers[player] = currentPlayer;
-    
     if(currentPlayer.score > bestScore) {
       hitButton.disabled = true;
       stayButton.disabled = true;
@@ -273,17 +266,18 @@ export const IndexPage = () => {
 
     if(!!hasAce) {
       player.score += 10;
+
+      setHands({
+        dealer: currentDealer,
+        players: updatedPlayers
+      });
+
       aceButton.disabled = true;
       playerScore.nodeValue = player.score.toString();
     }
 
     updatedPlayers[playerNumber] = player;
-
-    setHands({
-      dealer: currentDealer,
-      players: updatedPlayers
-    });
-}
+  }
 
   return (
     <div className="table">
@@ -294,7 +288,7 @@ export const IndexPage = () => {
         <button onClick={ handleNewGameClick }>new game</button>
       </div>
       <div className="playerArea">
-        { hands.players && hands.players.map( (player, index) => <Playerarea key={ `player-${ index }`} player={ index.toString() } hand={ player.hand } handleHitClick={ handleHitButtonClick } handleStayClick={ handleStayButtonClick } handleAceClick={ handleAceButtonClick } />) }
+        { hands.players && hands.players.map( (player, index) => <Playerarea key={ `player-${ index }`} player={ index.toString() } score={ player.score } hand={ player.hand } handleHitClick={ handleHitButtonClick } handleStayClick={ handleStayButtonClick } handleAceClick={ handleAceButtonClick } />) }
       </div>
     </div>
   )
